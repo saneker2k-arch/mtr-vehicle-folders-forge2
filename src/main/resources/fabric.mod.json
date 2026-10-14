@@ -1,0 +1,18 @@
+{
+	"schemaVersion": 1,
+	"id": "mtrvehiclefolders",
+	"version": "${version}",
+	"name": "MTR Vehicle Folders",
+	"description": "Addon for Minecraft Transit Railway 4.0.5: a new vehicle selection menu with folders (resource pack > country > family).",
+	"license": "MIT",
+	"environment": "client",
+	"mixins": [
+		"mtrvehiclefolders.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.14.0",
+		"minecraft": "~1.19.4",
+		"java": ">=17",
+		"mtr": ">=4.0.5"
+	}
+}

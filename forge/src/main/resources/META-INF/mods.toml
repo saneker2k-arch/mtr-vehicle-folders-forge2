@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+license = "MIT"
+
+[[mods]]
+modId = "mtrvehiclefolders"
+version = "${version}"
+displayName = "MTR Vehicle Folders"
+description = '''Addon for Minecraft Transit Railway 4.0.5: a vehicle selection menu with folders and folders in the stations, routes and depots lists.'''
+# The mod only works on the client, so servers do not need it and players without it can still join
+displayTest = "IGNORE_ALL_VERSION"
+
+[[mixins]]
+config = "mtrvehiclefolders.mixins.json"
+
+[[dependencies.mtrvehiclefolders]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.mtrvehiclefolders]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1]"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.mtrvehiclefolders]]
+modId = "mtr"
+mandatory = true
+versionRange = "[4.0.5,)"
+ordering = "AFTER"
+side = "CLIENT"

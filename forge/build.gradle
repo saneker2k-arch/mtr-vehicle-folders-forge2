@@ -1,0 +1,80 @@
+plugins {
+	id "java"
+	id "net.minecraftforge.gradle" version "6.+"
+	id "org.spongepowered.mixin" version "+"
+}
+
+version = project.mod_version
+group = "com.mtrvehiclefolders"
+
+base {
+	archivesName = "mtr-vehicle-folders-forge-1.20.1"
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 17
+}
+
+minecraft {
+	mappings channel: "official", version: project.minecraft_version
+}
+
+repositories {
+	// MTR для Forge 1.20.1 кладётся в libs/ под именем mtr-forge-1.20.1.jar
+	flatDir { dirs "libs" }
+	maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
+	mavenCentral()
+}
+
+dependencies {
+	minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+	annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
+
+	// MTR использует аннотации javax.annotation, без них компилятор не может прочитать его классы
+	compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+
+	compileOnly fg.deobf("blank:mtr-forge:1.20.1")
+}
+
+mixin {
+	add sourceSets.main, "mtrvehiclefolders.refmap.json"
+	config "mtrvehiclefolders.mixins.json"
+}
+
+// Общий код берётся из Fabric-проекта (папка ../src), кроме файлов, которые зависят от загрузчика:
+// у Forge-версии они свои (platform/Platform.java и mixin/MinecraftClientMixin.java).
+def sharedSources = layout.buildDirectory.dir("shared-sources")
+
+tasks.register("copySharedSources", Sync) {
+	from("../src/main/java") {
+		exclude "com/mtrvehiclefolders/platform/**"
+		exclude "com/mtrvehiclefolders/mixin/MinecraftClientMixin.java"
+	}
+	into sharedSources
+}
+
+sourceSets.main.java.srcDir(sharedSources)
+
+tasks.named("compileJava") {
+	dependsOn "copySharedSources"
+}
+
+processResources {
+	// Файлы переводов общие с Fabric-проектом
+	from("../src/main/resources/assets") {
+		into "assets"
+	}
+	inputs.property "version", project.version
+	filesMatching("META-INF/mods.toml") {
+		expand "version": project.version
+	}
+}
+
+jar {
+	finalizedBy "reobfJar"
+}
